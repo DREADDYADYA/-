@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Структура хвороби</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f4f4f9, #e0e0f5);
+            color: #333;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            overflow-y: scroll; /* Змінено з auto на scroll */
+            height: 1000vh; /* Щоб забезпечити прокручування */
+        }
+
+        h1 {
+            color: #fff;
+            cursor: pointer;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6314ca, #1a5ac7);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        h3 {
+            color: #fff;
+            cursor: pointer;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(109, 16, 197, 0.8), rgba(58, 133, 255, 0.8));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        h4 {
+            color: #fff;
+            cursor: pointer;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(138, 37, 224, 0.6), rgba(86, 157, 255, 0.6));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        h5 {
+            color: #fff;
+            cursor: pointer;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(154, 48, 235, 0.4), rgba(90, 165, 255, 0.4));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        h1:hover, h3:hover, h4:hover, h5:hover{
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            display: block;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            margin: 10px 20px;
+            padding: 0 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #6a11cb;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .content.show {
+            max-height: none;
+            opacity: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .symptom-block {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .symptom-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-button {
+            cursor: pointer;
+            color: #6a11cb;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 16px;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-button:hover {
+            color: #2575fc;
+        }
+
+        .description {
+            display: none;
+            margin-left: 20px;
+            font-size: 14px;
+            color: #555;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 3px solid #6a11cb;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .description.show {
+            display: block;
+        }
+
+        .complications, .drug-action {
+            font-style: italic;
+            color: #888;
+            margin-left: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 3px solid #ff6b6b;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .drug-action {
+            border-left: 3px solid #6bff6b;
+        }
+        .consequences {
+    font-style: italic;
+    color: #888;
+    margin-left: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border-left: 3px solid #ff6b6b;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.complications, .consequences, .drug-action {
+    display: none; /* Приховуємо блоки */
+}
+
+    </style>
+    <script>
+function scrollToSymptomBlock(blockId) {
+    const symptomBlock = document.getElementById(blockId);
+    if (symptomBlock) {
+        symptomBlock.scrollIntoView({ behavior: 'smooth' }); // Плавне прокручування
+    }
+}
+        // Функція для перемикання контенту
+        function toggleContent(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle("show");
+            if (content.classList.contains("show")) {
+                setTimeout(() => content.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+            }
+        }
+
+        // Функція для перемикання опису
+        function toggleDescription(descriptionId) {
+            const description = document.getElementById(descriptionId);
+            description.classList.toggle("show");
+        }
+
+        // Функція для оновлення імені паціента
+        function updatePatientName() {
+            const patientName = document.getElementById("patientNameInput").value || "Ім'я паціента";
+            document.querySelectorAll(".patientNamePlaceholder").forEach(el => {
+                el.textContent = patientName;
+            });
+        }
+
+        // Функція для введення показників тиску
+        function updateBloodPressure() {
+            const systolic = document.getElementById("systolicInput").value || "_";
+            const diastolic = document.getElementById("diastolicInput").value || "_";
+
+            // Оновлюємо плейсхолдер
+            document.querySelectorAll(".bloodPressurePlaceholder").forEach(el => {
+                el.innerHTML = `<strong>${systolic} на ${diastolic}</strong>`;
+            });
+        }
+
+        // Функція для оновлення років
+        function updateYears(diseaseId) {
+            const yearsInput = document.getElementById(`yearsInput${diseaseId}`);
+            const yearsPlaceholders = document.querySelectorAll(`.yearsPlaceholder[data-disease-id="${diseaseId}"]`);
+
+            if (yearsInput) {
+                const years = yearsInput.value || "_";
+                yearsPlaceholders.forEach(placeholder => {
+                    placeholder.textContent = years;
+                });
+            }
+        }
+
+        // Функція для оновлення симптомів, ускладнень та дії препарату
+        function updateSymptomsAndComplications() {
+    const symptoms = [];
+    const complicationsSet = new Set(); // Для уникнення дублікатів ускладнень
+    const drugActionsSet = new Set();  // Для уникнення дублікатів дій препарату
+    const consequencesSet = new Set(); // Для уникнення дублікатів наслідків ускладнень
+    const benefitsSet = new Set();     // Для уникнення дублікатів особливої вигоди
+
+    // Збираємо симптоми, ускладнення, дію препарату, наслідки та особливу вигоду
+    document.querySelectorAll('input[name="symptom"]:checked').forEach(symptomCheckbox => {
+        // Отримуємо текст симптому
+        const symptomText = symptomCheckbox.parentElement.querySelector('.symptom-text');
+        if (symptomText) {
+            symptoms.push(symptomText.textContent.trim());
+        }
+
+        // Отримуємо ускладнення для поточного симптому
+        const symptomId = symptomCheckbox.getAttribute('data-symptom-id');
+        const complicationText = document.querySelector(`.complications[data-symptom-id="${symptomId}"] span`)?.textContent || "";
+
+        // Розділяємо ускладнення за комами та додаємо їх до множини
+        complicationText.split(',').forEach(complication => {
+            if (complication.trim()) {
+                complicationsSet.add(complication.trim());
+            }
+        });
+
+        // Отримуємо дію препарату для поточного симптому
+        const drugActionText = document.querySelector(`.drug-action[data-symptom-id="${symptomId}"] span`)?.textContent || "";
+
+        // Розділяємо дію препарату на частини за комами
+        const drugActionParts = drugActionText.split(',').map(part => part.trim());
+
+        // Додаємо кожну частину до множини
+        drugActionParts.forEach(part => {
+            if (part) {
+                drugActionsSet.add(part);
+            }
+        });
+
+        // Отримуємо наслідки ускладнень для поточного симптому
+        const consequenceText = document.querySelector(`.consequences[data-symptom-id="${symptomId}"] span`)?.textContent || "";
+
+        // Розділяємо наслідки за комами та додаємо їх до множини
+        consequenceText.split(',').forEach(consequence => {
+            if (consequence.trim()) {
+                consequencesSet.add(consequence.trim());
+            }
+        });
+
+        // Отримуємо особливу вигоду для поточного симптому
+        const benefitText = document.querySelector(`.benefit[data-symptom-id="${symptomId}"] span`)?.textContent || "";
+
+        // Розділяємо особливу вигоду за комами та додаємо їх до множини
+        benefitText.split(',').forEach(benefit => {
+            if (benefit.trim()) {
+                benefitsSet.add(benefit.trim());
+            }
+        });
+    });
+
+    // Оновлюємо плейсхолдери для симптомів
+    const uniqueSymptoms = Array.from(new Set(symptoms)).join(", ");
+    document.querySelectorAll(".symptomsPlaceholder").forEach(el => {
+        el.innerHTML = uniqueSymptoms ? `<strong>${uniqueSymptoms}</strong>` : "(симптоми)";
+    });
+
+    // Оновлюємо плейсхолдери для ускладнень (без повторень)
+    const uniqueComplications = Array.from(complicationsSet).join(", ");
+    document.querySelectorAll(".complicationsPlaceholder").forEach(el => {
+        el.innerHTML = uniqueComplications ? `<strong>${uniqueComplications}</strong>` : "(ускладнення)";
+    });
+
+    // Оновлюємо плейсхолдери для дії препарату (без повторень)
+    const uniqueDrugActions = Array.from(drugActionsSet).join(", ");
+    document.querySelectorAll(".drugActionsPlaceholder").forEach(el => {
+        el.innerHTML = uniqueDrugActions ? `<strong>${uniqueDrugActions}</strong>` : "(дія препарату)";
+    });
+
+    // Оновлюємо плейсхолдери для наслідків ускладнень (без повторень)
+    const uniqueConsequences = Array.from(consequencesSet).join(", ");
+    document.querySelectorAll(".consequencesPlaceholder").forEach(el => {
+        el.innerHTML = uniqueConsequences ? `<strong>${uniqueConsequences}</strong>` : "(наслідки ускладнень)";
+    });
+
+    // Оновлюємо плейсхолдери для особливої вигоди (без повторень)
+    const uniqueBenefits = Array.from(benefitsSet).join(", ");
+    document.querySelectorAll(".benefitsPlaceholder").forEach(el => {
+        el.innerHTML = uniqueBenefits ? `<strong>${uniqueBenefits}</strong>` : "(особиста вигода)";
+    });
+}
+    </script>
+</head>
+<body>
+
+    <!-- Привітання з плейсхолдером для імені паціента -->
+    <h1 onclick="toggleContent('main')"><i class="fas fa-handshake"></i> Привітання</h1>
+    <div id="main" class="content">
+        <p><input type="text" id="patientNameInput" oninput="updatePatientName()" placeholder="Введіть ім'я паціента"></p>
+            <p>
+                <strong><span class="patientNamePlaceholder">_</span></strong> Добрий день! Це вас потурбував (П.І.Б. спеціаліста). Стосовно вашого лікування вам телефоную. Як зараз себе почуваєте?</p>
+                <p><span class="toggle-button" onclick="toggleDescription('main0.1')">Ящо проблема не відома</span>
+                    <div id="main0.1" class="description">
+                        <p>
+                            <strong> Покращення стану спостергієте❓</strong></p>
+                            <p><span class="toggle-button" onclick="toggleDescription('main0.2')">Так</span>
+                                <div id="main0.2" class="description">Це чудово! Зорінтуйте мене будь ласка, які симптоми вас турбували на початку лікування, я вашу медичну картку заповню?   
+                </div>
+                <p><span class="toggle-button" onclick="toggleDescription('main0.3')">Ні</span>
+                    <div id="main0.3" class="description">Добре зорінтуйте, що турбуе вас на данний момент?  
+    </div>
+            </div>
+            <p><span class="toggle-button" onclick="toggleDescription('main0.4')">Ящо проблема відома</span>
+                <div id="main0.4" class="description">Препарат використовуєте? 
+    </div>
+</div>
+
+                                                                                                                                                      <!-- Блок Хвороба 1 ГІПЕРТОНІЯ-->
+    <h1 onclick="toggleContent('disease1')"><i class="fas fa-heartbeat"></i> ГІПЕРТОНІЯ</h1>
+    <div id="disease1" class="content">
+        <!-- Підблок 1.1: Виявлення потреби -->
+        <h3 onclick="toggleContent('disease1_1')"><i class="fas fa-search"></i> Виявлення потреби</h3>
+        <div id="disease1_1" class="content">
+
+                                                                                                                                    <!-- Підблок 1.1.1: СИМПТОМАТИКА ГІПЕРТОНІЇ ХВ1 -->
+
+            <h4 onclick="toggleContent('disease1_1_3')"><i class="fas fa-heart-pulse"></i>До яких показників підвищується тиск?</h4>
+            <div id="disease1_1_3" class="content">
+                <div id="bloodPressureInput">
+                    <label for="systolicInput">Систолічний тиск:</label>
+                    <input type="number" id="systolicInput" placeholder="Введіть систолічний тиск">
+            
+                    <p><label for="diastolicInput">Діастолічний тиск:</label>
+                    <input type="number" id="diastolicInput" placeholder="Введіть діастолічний тиск">
+            
+                    <button onclick="updateBloodPressure()">Оновити тиск</button>
+                </div>
+
+
+                    <p><strong>Перша стадія (легка):</strong></p>
+                    <p>
+                        📈 Систолічний тиск: 140-159 мм рт. ст.</p>
+                    <p>
+                        📉 Діастолічний тиск: 90-99 мм рт. ст.</p>
+                        <span class="toggle-button" onclick="toggleDescription('legka1')">Розширити [+]</span>
+                        <div id="legka1" class="description">
+                            
+                            <p><strong>Такий тиск говорить що почалося пошкодження судин. Розвивається атеросклероз. Він небезпечний тим, що звужує судини, порушує кровопостачання органів є ризик розвитку інфаркту, інсульту.</strong></p>
+
+                    </div>
+
+                        <p><strong>Друга стадія (помірна):</strong></p>
+                        <p>
+                            📈Систолічний тиск: 160-179 мм рт. ст.</p>
+                        <p>
+                            📉 Діастолічний тиск: 100-109 мм рт. ст.</p>
+                            <span class="toggle-button" onclick="toggleDescription('pomirna2')">Розширити [+]</span>
+                            <div id="pomirna2" class="description"><strong>Це високий тиск!
+                                <p>При такому тиску є високий ризик інсультів інфарктів з цим я сподіваюся ще не стикалися❓</strong></p> 
+                                <span class="toggle-button" onclick="toggleDescription('pomirna2.1')">-Так!</span>
+                                <div id="pomirna2.1" class="description">Коли, в якому році? Це дуже погано тому що другий можна вже не пережити.
+                                </div>
+                                <span class="toggle-button" onclick="toggleDescription('pomirna2.2')">-Ні!</span>
+                                <div id="pomirna2.2" class="description">Слава Богу, вам повезло!</p>  
+                                </div>
+                                <p><span class="toggle-button" onclick="toggleDescription('kriz')" style="color: inherit; cursor: pointer;">Гіпертонічні кризи не вилазили (раптове підвищення тиску до критичних показників)❓</h4>
+                                <div id="kriz" class="description">
+                                    <p>Якщо у вас вже був гіпертонічний криз, він може повторюватися! Це свідчить про нестабільність тиску, і без належного лікування ризик повторних кризів зростає. 
+                                        Кожен наступний криз може бути важчим і мати більш серйозні наслідки, інсульти інфаркти набряки легеньт і т.д.
+                                    </p>
+                                    <p>Наша задача до цього не допустити! 
+                                </div>    
+    
+                        </div>
+                        <p><strong> Третя стадія (тяжка, гіпертензивний криз):</strong></p>
+                            <p>📈Систолічний тиск: 180 мм рт. ст. і вище.</p>
+                            <p>📉 Діастолічний тиск: 110 мм рт. ст. і вище.</p>
+                            <span class="toggle-button" onclick="toggleDescription('Tyajka3')">Розширити [+]</span>
+                            <div id="Tyajka3" class="description"><strong>Це дуже високий тиск!
+                                <p>При такому тиску є високий ризик інсультів інфарктів з цим я сподіваюся ще не стикалися❓</strong></p>  
+                                <span class="toggle-button" onclick="toggleDescription('Tyajka3.1')">-Так!</span>
+                                <div id="Tyajka3.1" class="description">Коли, в якому році? Це дуже погано тому що другий можна вже не пережити.
+                                </div>
+                                <span class="toggle-button" onclick="toggleDescription('Tyajka3.2')">-Ні!</span>
+                                <div id="Tyajka3.2" class="description">Слава Богу, вам повезло!</p>  
+                                </div>
+                                <p><span class="toggle-button" onclick="toggleDescription('kriz2')" style="color: inherit; cursor: pointer;">Гіпертонічні кризи вилазять (раптове підвищення тиску до критичних показників)❓</h4>
+                                    <div id="kriz2" class="description">
+                                        <p>Якщо у вас вже був гіпертонічний криз, він може повторюватися! Це свідчить про нестабільність тиску, і без належного лікування ризик повторних кризів зростає. 
+                                            Кожен наступний криз може бути важчим і мати більш серйозні наслідки, інсульти інфаркти набряки легеньт і т.д.
+                                        </p>
+                                        <p>Наша задача до цього не допустити! 
+                                    </div>        
+                        </div>  
+                        <p><strong>Понижений тиск</strong></p> 
+
+            </div>
+
+                                                                                                                                                                               <!-- Підблок 1.1.2: ЯК ДАВАНО ГІПЕРТОНІЯ -->
+
+            <h4 onclick="toggleContent('disease1_1_2')"><i class="fas fa-calendar-alt"></i> Як давно ця проблема в вас?</h4>
+            <div id="disease1_1_2" class="content">
+                <input type="number" id="yearsInput1" onchange="updateYears(1)" placeholder="Введіть кількість років">
+                <p>Років: <span class="yearsPlaceholder" data-disease-id="1">_</span></p>
+            </div>
+
+            <h4 onclick="toggleContent('disease1_1_1')"><i class="fas fa-stethoscope"></i> Коли піднімається тиск, які симптоми вам про це сигналізують?</h4>
+            <div id="disease1_1_1" class="content">
+                <!-- Симптом 1 ГОЛОВНІ БОЛІ -->
+                <div class="symptom-block" id="symptom-block-1">
+                    <label class="symptom-label">
+                        <input type="checkbox" name="symptom" data-symptom-id="1" onchange="updateSymptomsAndComplications()">
+                        <span class="symptom-text"  onclick="event.preventDefault(); toggleDescription('desc1');"><strong>Головні болі </strong></span>
+                    </label>
+                    <div id="desc1" class="description">
+                        <p>Від тиску в першу чергу страждають дрібні судини, особливо в головному мозку. Головний біль, як раз таки сигналізує, що почався набряк судин.</p>
+                        <p>На цьому фоні може розвитися ішемічний інсульт, аневризми (крововиливи в мозок)</p>
+                        <p>Від напруги стінки судин слабшають, і вони можуть не витримати навантаження. Наша задача до цього не допустити.</p>
+                        <p>❓<strong><span class="patientNamePlaceholder">_</span></strong>, скажіть будь ласка, оніміння поколювання , судоми, слабкість почали помічати вже в кінцівках ❓</p>
+                        <span class="toggle-button" onclick="toggleDescription('desc1.1')">-🗣Так</span>
+                        <div id="desc1.1" class="description">
+                            Так! Це є основними ознаками розвитку інсультів, кров не може правильно постачати мозок. 
+                            Тому нервові імпульси до рук ніг затримуються. Наслідки можуть бути дуже важкими: 
+                            Від часткової втрати контролю над тілом, до повної втрати рухливості та опинення в лежачому положенні і повній залежності від близьких людей і, як наслідок, до смерті, не дай Боже! 
+                            Тому наша зараз з вами задача — до цього не довести, правильно?
+                        </div>
+                        <p><span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-2')">-🗣Так діабет</span>
+
+                            <p><span class="toggle-button" onclick="toggleDescription('desc1.2')">Розширюєш [+]</span>
+                                <div id="desc1.2" class="description">
+                                    <strong>❓<span class="patientNamePlaceholder">_</span></strong>, скажіть будь ласка вже почали помічати,
+                                    <span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-2')">запаморочення</span>,
+                                    <span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-3')">шуми дзівн у вухах</span>,
+                                    <span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-4')">мушки перед очима</span>❓
+                                </div>
+
+                    <div class="complications" data-symptom-id="1">
+                        <span>Інсультів, аневризм (крововиливів в мозок, через розрив судин)</span>
+                    </div>
+                    <div class="consequences" data-symptom-id="1">
+                        <span>Часткова втрата контролю над тілом, втрата здатності тримати сечу і кал, або повна втрата рухливості, опинення в повній залежності від близьких людей, смерть.</span>
+                    </div>
+
+                    <div class="drug-action" data-symptom-id="1">
+                        <span>Зміцнить судини, зробить їх еластичнішими, завдяки чому вони будуть природньо розширюватися краще будуть витримувати тиск, не будуть звужуватися спазмуватися, відновимо нормальне постачання кисню до головного мозку</span>
+                    </div>
+                    <div class="benefit" data-symptom-id="1">
+                        <span>З ранку будете прокидатися зі свіжою головою, з нормальним настроем на день, і виконування повсякденної роботи не буде перетворюватися на пекло, через часті головні болі.</span>
+                    </div>
+                </div>
+            </div>
+                                                                                                                                                                              <!-- Симптом 2 Запаморочення-->
+
+                <div class="symptom-block" id="symptom-block-2">
+                    <label class="symptom-label">
+                        <input type="checkbox" name="symptom" data-symptom-id="2" onchange="updateSymptomsAndComplications()">
+                        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc2');"><strong>Запаморочення </strong></span>
+                    </label>
+                    <div id="desc2" class="description">
+                        Через недостатне кровопостачання кисню, почалася гіпоксія тканин головного мозку. Тому виникають запаморочення, головкружіння, потемніння в очках. Є високий ризик ішемічних інсультів.
+                        <p><span class="toggle-button" onclick="toggleDescription('desc2.1')">Розширюєш [+]</span>
+                        <div id="desc2.1" class="description"> <span class="patientNamePlaceholder">_</span> скажіть будь ласка вже почали помічати, погіршення пам'яті, помічаєте що частіше стали щось забувати  розмови, зустрічі або предмети, що відбувалися нещодавно ?
+                            <p>-Так! <span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-5')">(Робиш розширення симптоматики на розвиток деменції)</span></p>
+                                <p>-Ні (Значить це вказує на порушення кровообігу в судинах голови тому присутній ризик)
+                            
+                        </div> 
+
+                    <div class="complications" data-symptom-id="2">
+                        <span>Інсультів, аневризм (крововиливів в мозок, через розрив судин)</span>
+                    </div>
+                    <div class="consequences" data-symptom-id="2">
+                        <span>Часткова втрата контролю над тілом, втрата здатності тримати сечу і кал, або повна втрата рухливості, опинення в повній залежності від близьких людей, смерть.</span>
+                    </div>
+
+                    <div class="drug-action" data-symptom-id="2">
+                        <span>Почистить судини від холестирину, розчепить тромби фібринолітиками, відновимо нормальне постачання кисню до головного мозку</span>
+                    </div>
+                    <div class="benefit" data-symptom-id="2">
+                        <span>З ранку будете прокидатися зі свіжою головою, зможете впевнено виконувати будь яку роботу, без відчуття того що земля йде з під ніг, будете впевнено стояти на ногах, без запаморочень, головкружінь. </span>
+                    </div>
+                </div>
+            </div>
+                                                                                                                                                                                       <!-- Симптом 3 ШУМ У ВУХАХ-->
+<div class="symptom-block" id="symptom-block-3">
+    <label class="symptom-label">
+        <input type="checkbox" name="symptom" data-symptom-id="3" onchange="updateSymptomsAndComplications()">
+        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc3');"><strong>Шум у вухах</strong></span>
+    </label>
+    <div id="desc3" class="description">
+                        Через порушення кровообігу в судинах, які постачають внутрішне вухо, виникає, шум (тинітус). Це також свідчить про порушення кровообігу в судинах головного мозку або шиї. Є ризики розвитку ішемічних інсультів, також втрати слуху, через відмирання клітин внутрішнього вуха.
+                        <p><span class="toggle-button" onclick="toggleDescription('desc3.1')">Розширити [+]</span>
+                        <div id="desc3.1" class="description">
+                        <strong><span class="patientNamePlaceholder">_</span></strong>, скажіть будь ласка остеохондроз шийного вітділу або грижі, протрузій вас турбують ? 
+                        <p>-Так! (Робиш розширення симптоматикт на остеохондроз)
+                        <p>-Ні (Значить це вказує на порушення кровообігу в судинах голови особливо в потилиці тіх що живлять внутрішне вухо)
+                    </div>
+
+                    <div class="complications" data-symptom-id="3">
+                        <span>Інсультів, втрати слуху</span>
+                    </div>
+                    <div class="consequences" data-symptom-id="3">
+                        <span>доведеться прибігнути к використанню слухового аппарату, ізоляція від звонішнього світу через глухоту.</span>
+                    </div>
+
+                    <div class="drug-action" data-symptom-id="3">
+                        <span>Покращимо кровообіг до внутрішнього вуха.</span>
+                    </div>
+                    <div class="benefit" data-symptom-id="3">
+                        <span>В ночі будете нормально висипатися, легше будете концентруватися, будете насолоджуватися тишею без шуму у вухах.</span>
+                    </div>
+                </div>
+                </div>
+
+                                                                                                                                                <!-- Симптом 4 МУШКИ ПЕРЕД ОЧИМА -->
+
+<div class="symptom-block" id="symptom-block-4">
+    <label class="symptom-label">
+        <input type="checkbox" name="symptom" data-symptom-id="4" onchange="updateSymptomsAndComplications()">
+        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc4');"><strong>Порушення зору (нечіткість, «мушки перед очима»)</strong></span>
+    </label>
+    <div id="desc4" class="description">
+
+                        Тиск почав вже пошкоджувати дрібні судини в сітківці ока, почала розвиватися гіпертонічна ретинопатія. Вона може призвести до повної сліпоти.
+                        <span class="toggle-button" onclick="toggleDescription('desc4.1')">Розширити [+]</span>
+                        <div id="desc4.1" class="description">
+                            <strong><span class="patientNamePlaceholder">_</span></strong>, скажіть будь ласка, можливо присутня плівка перед очима або відчуття ніби дивитесь через туман або запотіле скло, помічаєте за собою? 
+                            <p>-Так! (Робиш розширення симптоматики, на КАТАРАКТУ)
+                            <p>-Ні (Значить пошкоджуються судини в сітківці ока)
+                        </div>
+
+
+                    <div class="complications" data-symptom-id="4">
+                        <span>Гіпертонічна ретинопатія, через яку можна втратити зір</span>
+                    </div>
+                    <div class="consequences" data-symptom-id="4">
+                        <span>Доведеться робити операцію по заміні хрусталика, або не дай Боже того що залишитесь на завжди в темряві, через втрату зору</span>
+                    </div>
+                    <div class="drug-action" data-symptom-id="4">
+                        <span>Нормалізуємо кровообіг до органів зору, відновимо живлення сітківки ока, це дуже сильно покращить зір</span>
+                    </div>
+                    <div class="benefit" data-symptom-id="4">
+                        <span>Зможете і ціни в магазині розрізняти на багато краще, і дрібний шрифт читати без окулярів.</span>
+                    </div>
+                </div>
+
+                                                                                                                                                                <!-- Симптом 5 ПАМ'ЯТЬ-->
+
+
+<div class="symptom-block" id="symptom-block-5">
+    <label class="symptom-label">
+        <input type="checkbox" name="symptom" data-symptom-id="5" onchange="updateSymptomsAndComplications()">
+        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc5');"><strong>Погіршення пам'яті, здатності до концентрації, когнітивних функцій.</strong></span>
+    </label>
+    <div id="desc5" class="description">
+
+        <p>На початкових стадіях погіршення пам'яті, зданості до концентрації або сприйматися як нормальні ознаки старіння. Тобто те що людина стає забудькуватою не сприймається серйозно через вік. 
+        <p>Але це серйозна ознака, того що розвивається деменція. Через порушення кровопостачання, відмирають клітин головного мозку. Це небезпечно не тільки ішемічними інсультами, а також може почати прогресувати Слабоум'я, або інтелектуальна недостатність.
+        <p>Тому наша задача зараз, до цього не довести.
+    </div>
+
+    <div class="complications" data-symptom-id="5">
+        <span>Деменція</span>
+    </div>
+
+    <div class="drug-action" data-symptom-id="5">
+        <span>Нормалізуємо кровообіг до органів, зору відновимо живлення сітківки ока.</span>
+    </div>
+</div>
+            
+
+                                                                                                                                                <!-- Симптом 6 БІЛЬ У ГРУДЯХ ГІПЕРТОНІЯ -->
+
+<div class="symptom-block" id="symptom-block-6">
+    <label class="symptom-label">
+        <input type="checkbox" name="symptom" data-symptom-id="6" onchange="updateSymptomsAndComplications()">
+        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc6');"><strong>Біль у грудях</strong></span>
+    </label>
+    <div id="desc6" class="description">
+        <p>Почала розвиватися стінокардія, небезпечно тим що може призвести до інфаркту міокарда.
+            <p>Я так розумію біль тиснучий і відчутний за грудиною або в лівій частині грудної клітини? 
+        <p>-Так! (Значить так це розвивається стінокардія, дуже високий ризик інфарктів) 
+            <p><span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc6.1');"><strong> С кажіть задишку відчуття не хватки повітря, холодний піт, почали помічати вже ?</strong></span>
+        </label>
+        <div id="desc6.1" class="description">
+        <p><span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-8')">-Так!(Задишка)</span>
+            <span class="toggle-button" onclick="scrollToSymptomBlock('symptom-block-8')">-Так!(Холодний піт)</span>
+        </div>
+                        
+                    </div>
+
+                    <div class="complications" data-symptom-id="6">
+                        <span>Ішемічна хвороба серця, серцева ндостатність, інфаркт міокарда, раптова зупинка серця</span>
+                    </div>
+                    <span class="toggle-button" onclick="toggleDescription('desc6.1')">Розширення симптому 6</span>
+                    <div id="desc6.1" class="description">
+                        <span class="patientNamePlaceholder">_</span>, текст розширення симптому 6
+                    </div>
+                    <div class="drug-action" data-symptom-id="6">
+                        <span>Дія препарату для симптому 6</span>
+                    </div>
+                                                                                                                                                <!-- ГПЕРТОНІЯ Симптом 7  -->
+                </div>
+                <div class="symptom-block" id="symptom-block-7">
+                    <label class="symptom-label">
+                        <input type="checkbox" name="symptom" data-symptom-id="7" onchange="updateSymptomsAndComplications()">
+                        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc7');"><strong>Порушення серцевого ритму(аритмія, тахікардія, екстрасистолія)</strong></span>
+                    </label>
+                    <div id="desc7" class="description">
+                        Опис до симптому 7
+                    </div>
+                
+                    <div class="complications" data-symptom-id="7">
+                        <span>Серцева недостатність, інфаркт міокарда</span>
+                    </div>
+                    <span class="toggle-button" onclick="toggleDescription('desc7.1')">Розширення симптому 7</span>
+                    <div id="desc7.1" class="description">
+                        <span class="patientNamePlaceholder">_</span>, текст розширення симптому 7
+                    </div>
+                    <div class="drug-action" data-symptom-id="7">
+                        <span>Почистимо судини від холестерину, відновимо їх елстичність, серце буде праціювати на багато краще.</span>
+                    </div>
+                </div>
+                                                                                                                                                                         <!-- ГПЕРТОНІЯ Симптом 8 -->
+                 <div class="symptom-block" id="symptom-block-8">
+    <label class="symptom-label">
+        <input type="checkbox" name="symptom" data-symptom-id="8" onchange="updateSymptomsAndComplications()">
+        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc8');"><strong>Задишка</strong></span>
+    </label>
+    <div id="desc8" class="description">
+        Серце не справляється з навантаженням і рідина накопичується в легенях. Це також є ознакою стінокардії Підвищена пітливість
+    </div>
+
+    <div class="complications" data-symptom-id="8">
+        <span>Ускладнення симптому 8</span>
+    </div>
+    <span class="toggle-button" onclick="toggleDescription('desc8.1')">Розширення симптому 8</span>
+    <div id="desc8.1" class="description">
+        <span class="patientNamePlaceholder">_</span>, текст розширення симптому 8
+    </div>
+    <div class="drug-action" data-symptom-id="8">
+        <span>Почистимо судини від холестерину, відновимо їх елстичність, м'язи будуть отримувати більше кисню</span>
+    </div>
+</div>                                                                                                                                                         
+</div>
+
+
+
+            
+            <h4 onclick="toggleContent('disease1_1_5')"><i class="fas fa-pills"></i> Які препарати використовуєте на постійній основі.</h4>
+            <div id="disease1_1_5" class="content">
+                Тут можна додати текст.
+            </div>
+
+
+                                                                                                                                 <!-- Підблок 1.1.4: РОЗШИРЕННЯ СИМПТОМАТИКИ ГІПЕРТОНІЯ -->
+
+            <h4 onclick="toggleContent('disease1_1_4')"><i class="fas fa-stethoscope"></i> Розширення симптоматики</h4>
+            <div id="disease1_1_4" class="content">
+                <div class="symptom-block" id="symptom-block-9">
+                    <label class="symptom-label">
+                        <input type="checkbox" name="symptom" data-symptom-id="9" onchange="updateSymptomsAndComplications()">
+                        <span class="symptom-text" onclick="event.preventDefault(); toggleDescription('desc9');"><strong>Симптом9</strong></span>
+                    </label>
+                    <div id="desc9" class="description">
+                        Опис до симптому 9
+                    </div>
+                
+                    <div class="complications" data-symptom-id="9">
+                        <span>Ускладнення симптому 9</span>
+                    </div>
+                    <div class="consequences" data-symptom-id="9">
+                        <span>Наслідки ускладнень</span>
+                    </div>
+                    <span class="toggle-button" onclick="toggleDescription('desc9.1')">Розширення симптому 9</span>
+                    <div id="desc9.1" class="description">
+                        <span class="patientNamePlaceholder">_</span>, текст розширення симптому 9
+                    </div>
+                    <div class="drug-action" data-symptom-id="9">
+                        <span>Дія препарату для симптому 9</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                
+
+
+
+        <!-- Підблок 1.2: Презентація -->
+        <h3 onclick="toggleContent('disease1_2')"><i class="fas fa-clipboard-list"></i> Презентація</h3>
+        <div id="disease1_2" class="content">
+
+           За рахунок того що <span class="drugActionsPlaceholder">_</span></p> тиск з показників  <span class="bloodPressurePlaceholder">(тиск)</span> стабілізуємо до 120-130. 
+           Приберемо симптоми: <span class="symptomsPlaceholder">_</span> за рахунок цього до таких ускладнень як <span class="complicationsPlaceholder">_</span> 
+           Тому повністю ризики того що.<span class="consequencesPlaceholder">(наслідки ускладнень)</span>ми невілюємо, тому <span class="benefitsPlaceholder">(особиста вигода)</span></p>
+
+           <p>Ім'я паціента: <span class="patientNamePlaceholder">_</span></p>
+            <p>Років: <span class="yearsPlaceholder" data-disease-id="1">_</span></p>
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Наслідки ускладнень: <span class="consequencesPlaceholder">(наслідки ускладнень)</span></p>
+            <p>Особлива вигода: <span class="benefitsPlaceholder">(особиста вигода)</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+            <p>Показники тиску: <span class="bloodPressurePlaceholder">(тиск)</span></p>
+            <!-- Додаткові підблоки -->
+            <h4 onclick="toggleContent('disease1_2_1')"><i class="fas fa-comment"></i> Підблок 1.2.1</h4>
+            <div id="disease1_2_1" class="content">
+                <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+                <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+                <p>Наслідки ускладнень: <span class="consequencesPlaceholder">(наслідки ускладнень)</span></p>
+                <p>Особлива вигода: <span class="benefitsPlaceholder">(особиста вигода)</span></p>
+                <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+                <p>Показники тиску: <span class="bloodPressurePlaceholder">(тиск)</span></p>
+            </div>
+
+            <h4 onclick="toggleContent('disease1_2_2')"><i class="fas fa-comment"></i> Підблок 1.2.2</h4>
+            <div id="disease1_2_2" class="content">
+                <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+                <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+                <p>Наслідки ускладнень: <span class="consequencesPlaceholder">(наслідки ускладнень)</span></p>
+                <p>Особлива вигода: <span class="benefitsPlaceholder">(особиста вигода)</span></p>
+                <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+                <p>Показники тиску: <span class="bloodPressurePlaceholder">(тиск)</span></p>
+            </div>
+            <!-- Додайте інші підблоки до 1.2.10 -->
+        </div>
+
+        <!-- Підблок 1.3: Усний договір -->
+        <h3 onclick="toggleContent('disease1_3')"><i class="fas fa-handshake"></i> Усний договір</h3>
+        <div id="disease1_3" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Наслідки ускладнень: <span class="consequencesPlaceholder">(наслідки ускладнень)</span></p>
+            <p>Особлива вигода: <span class="benefitsPlaceholder">(особиста вигода)</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+            <p>Показники тиску: <span class="bloodPressurePlaceholder">(тиск)</span></p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+                                                                                                                             <!-- Блок Хвороба 2 -->
+<h1 onclick="toggleContent('disease2')"><i class="fas fa-stethoscope"></i> Хвороба 2</h1>
+<div id="disease2" class="content">
+    <!-- Підблок 2.1: Виявлення потреби -->
+    <h3 onclick="toggleContent('disease2_1')"><i class="fas fa-search"></i> Виявлення потреби</h3>
+    <div id="disease2_1" class="content">
+        <!-- Підблок 2.1.1: Симптоматика -->
+        <h3 onclick="toggleContent('disease2_1_1')"><i class="fas fa-heartbeat"></i> Симптоматика</h3>
+        <div id="disease2_1_1" class="content">
+            <!-- Симптом 1 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="4" onchange="updateSymptomsAndComplications()">
+                    Симптом 1
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc4')">[+]</span>
+                <div id="desc4" class="description">
+                    Текст пояснення до симптому 1.
+                </div>
+                <div class="complications" data-symptom-id="4">
+                    <span>Інсульт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="4">
+                    <span>Знижує тиск</span>
+                </div>
+            </div>
+            <!-- Симптом 2 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="5" onchange="updateSymptomsAndComplications()">
+                    Симптом 2
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc5')">[+]</span>
+                <div id="desc5" class="description">
+                    Текст пояснення до симптому 2.
+                </div>
+                <div class="complications" data-symptom-id="5">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="5">
+                    <span>Зменшує боль</span>
+                </div>
+            </div>
+            <!-- Симптом 3 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="6" onchange="updateSymptomsAndComplications()">
+                    Симптом 3
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc6')">[+]</span>
+                <div id="desc6" class="description">
+                    Текст пояснення до симптому 3.
+                </div>
+                <div class="complications" data-symptom-id="6">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="6">
+                    <span>Покращує кровообіг</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Підблок 2.1.2: Як давно ця проблема -->
+        <h3 onclick="toggleContent('disease2_1_2')"><i class="fas fa-calendar-alt"></i> Як давно ця проблема в вас?</h3>
+        <div id="disease2_1_2" class="content">
+            <input type="number" id="yearsInput2" onchange="updateYears(2)" placeholder="Введіть кількість років">
+            <p>Років: <span class="yearsPlaceholder" data-disease-id="2">_</span></p>
+        </div>
+        
+        <!-- Підблок 2.1.3: Пустий підблок -->
+        <h3 onclick="toggleContent('disease2_1_3')"><i class="fas fa-comment"></i> Пустий підблок</h3>
+        <div id="disease2_1_3" class="content">
+            Тут можна додати текст.
+        </div>
+    </div>
+
+    <!-- Підблок 2.2: Презентація -->
+    <h3 onclick="toggleContent('disease2_2')"><i class="fas fa-presentation"></i> Презентація</h3>
+    <div id="disease2_2" class="content">
+        <p>Ім'я паціента: <span class="patientNamePlaceholder">_</span></p>
+        <p>Років: <span class="yearsPlaceholder" data-disease-id="2">_</span></p>
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        <!-- Додаткові підблоки -->
+        <h3 onclick="toggleContent('disease2_2_1')"><i class="fas fa-comment"></i> Підблок 2.2.1</h3>
+        <div id="disease2_2_1" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+
+        <h3 onclick="toggleContent('disease2_2_2')"><i class="fas fa-comment"></i> Підблок 2.2.2</h3>
+        <div id="disease2_2_2" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+        <!-- Додайте інші підблоки до 2.2.10 -->
+    </div>
+
+    <!-- Підблок 2.3: Усний договір -->
+    <h3 onclick="toggleContent('disease2_3')"><i class="fas fa-handshake"></i> Усний договір</h3>
+    <div id="disease2_3" class="content">
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+    </div>
+</div>
+                                                                                                                              <!-- Блок Хвороба 3 -->
+
+<h1 onclick="toggleContent('disease3')"><i class="fas fa-stethoscope"></i> Хвороба 3</h1>
+<div id="disease3" class="content">
+    <!-- Підблок 3.1: Виявлення потреби -->
+    <h3 onclick="toggleContent('disease3_1')"><i class="fas fa-search"></i> Виявлення потреби</h3>
+    <div id="disease3_1" class="content">
+        <!-- Підблок 3.1.1: Симптоматика -->
+        <h3 onclick="toggleContent('disease3_1_1')"><i class="fas fa-heartbeat"></i> Симптоматика</h3>
+        <div id="disease3_1_1" class="content">
+            <!-- Симптом 1 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="7" onchange="updateSymptomsAndComplications()">
+                    Симптом 1
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc7')">[+]</span>
+                <div id="desc7" class="description">
+                    Текст пояснення до симптому 1.
+                </div>
+                <div class="complications" data-symptom-id="7">
+                    <span>Інсульт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="7">
+                    <span>Знижує тиск</span>
+                </div>
+            </div>
+            <!-- Симптом 2 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="8" onchange="updateSymptomsAndComplications()">
+                    Симптом 2
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc8')">[+]</span>
+                <div id="desc8" class="description">
+                    Текст пояснення до симптому 2.
+                </div>
+                <div class="complications" data-symptom-id="8">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="8">
+                    <span>Знижує тиск</span>
+                </div>
+            </div>
+            <!-- Симптом 3 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="9" onchange="updateSymptomsAndComplications()">
+                    Симптом 3
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc9')">[+]</span>
+                <div id="desc9" class="description">
+                    Текст пояснення до симптому 3.
+                </div>
+                <div class="complications" data-symptom-id="9">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="9">
+                    <span>Покращує кровообіг</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Підблок 3.1.2: Як давно ця проблема -->
+        <h3 onclick="toggleContent('disease3_1_2')"><i class="fas fa-calendar-alt"></i> Як давно ця проблема в вас?</h3>
+        <div id="disease3_1_2" class="content">
+            <input type="number" id="yearsInput3" onchange="updateYears(3)" placeholder="Введіть кількість років">
+            <p>Років: <span class="yearsPlaceholder" data-disease-id="3">_</span></p>
+        </div>
+        
+        <!-- Підблок 3.1.3: Пустий підблок -->
+        <h3 onclick="toggleContent('disease3_1_3')"><i class="fas fa-comment"></i> Пустий підблок</h3>
+        <div id="disease3_1_3" class="content">
+            Тут можна додати текст.
+        </div>
+    </div>
+
+    <!-- Підблок 3.2: Презентація -->
+    <h3 onclick="toggleContent('disease3_2')"><i class="fas fa-presentation"></i> Презентація</h3>
+    <div id="disease3_2" class="content">
+        <p>Ім'я паціента: <span class="patientNamePlaceholder">_</span></p>
+        <p>Років: <span class="yearsPlaceholder" data-disease-id="3">_</span></p>
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        <!-- Додаткові підблоки -->
+        <h3 onclick="toggleContent('disease3_2_1')"><i class="fas fa-comment"></i> Підблок 3.2.1</h3>
+        <div id="disease3_2_1" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+
+        <h3 onclick="toggleContent('disease3_2_2')"><i class="fas fa-comment"></i> Підблок 3.2.2</h3>
+        <div id="disease3_2_2" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+        <!-- Додайте інші підблоки до 3.2.10 -->
+    </div>
+
+    <!-- Підблок 3.3: Усний договір -->
+    <h3 onclick="toggleContent('disease3_3')"><i class="fas fa-handshake"></i> Усний договір</h3>
+    <div id="disease3_3" class="content">
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+    </div>
+</div>
+
+                                                                                                                              <!-- Блок Хвороба 4 -->
+
+<!-- Блок Хвороба 4 -->
+<h1 onclick="toggleContent('disease4')"><i class="fas fa-stethoscope"></i> Хвороба 4</h1>
+<div id="disease4" class="content">
+    <!-- Підблок 4.1: Виявлення потреби -->
+    <h3 onclick="toggleContent('disease4_1')"><i class="fas fa-search"></i> Виявлення потреби</h3>
+    <div id="disease4_1" class="content">
+        <!-- Підблок 4.1.1: Симптоматика -->
+        <h3 onclick="toggleContent('disease4_1_1')"><i class="fas fa-heartbeat"></i> Симптоматика</h3>
+        <div id="disease4_1_1" class="content">
+            <!-- Симптом 1 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="10" onchange="updateSymptomsAndComplications()">
+                    Симптом 1
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc10')">[+]</span>
+                <div id="desc10" class="description">
+                    Текст пояснення до симптому 1.
+                </div>
+                <div class="complications" data-symptom-id="10">
+                    <span>Інсульт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="10">
+                    <span>Знижує тиск</span>
+                </div>
+            </div>
+            <!-- Симптом 2 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="11" onchange="updateSymptomsAndComplications()">
+                    Симптом 2
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc11')">[+]</span>
+                <div id="desc11" class="description">
+                    Текст пояснення до симптому 2.
+                </div>
+                <div class="complications" data-symptom-id="11">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="11">
+                    <span>Зменшує боль</span>
+                </div>
+            </div>
+            <!-- Симптом 3 -->
+            <div class="symptom-block">
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptom" data-symptom-id="12" onchange="updateSymptomsAndComplications()">
+                    Симптом 3
+                </label>
+                <span class="toggle-button" onclick="toggleDescription('desc12')">[+]</span>
+                <div id="desc12" class="description">
+                    Текст пояснення до симптому 3.
+                </div>
+                <div class="complications" data-symptom-id="12">
+                    <span>Інфаркт</span>
+                </div>
+                <div class="drug-action" data-symptom-id="12">
+                    <span>Покращує кровообіг</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Підблок 4.1.2: Як давно ця проблема -->
+        <h3 onclick="toggleContent('disease4_1_2')"><i class="fas fa-calendar-alt"></i> Як давно ця проблема в вас?</h3>
+        <div id="disease4_1_2" class="content">
+            <input type="number" id="yearsInput4" onchange="updateYears(4)" placeholder="Введіть кількість років">
+            <p>Років: <span class="yearsPlaceholder" data-disease-id="4">_</span></p>
+        </div>
+        
+        <!-- Підблок 4.1.3: Пустий підблок -->
+        <h3 onclick="toggleContent('disease4_1_3')"><i class="fas fa-comment"></i> Пустий підблок</h3>
+        <div id="disease4_1_3" class="content">
+            Тут можна додати текст.
+        </div>
+    </div>
+
+    <!-- Підблок 4.2: Презентація -->
+    <h3 onclick="toggleContent('disease4_2')"><i class="fas fa-presentation"></i> Презентація</h3>
+    <div id="disease4_2" class="content">
+        <p>Ім'я паціента: <span class="patientNamePlaceholder">_</span></p>
+        <p>Років: <span class="yearsPlaceholder" data-disease-id="4">_</span></p>
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        <!-- Додаткові підблоки -->
+        <h3 onclick="toggleContent('disease4_2_1')"><i class="fas fa-comment"></i> Підблок 4.2.1</h3>
+        <div id="disease4_2_1" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+
+        <h3 onclick="toggleContent('disease4_2_2')"><i class="fas fa-comment"></i> Підблок 4.2.2</h3>
+        <div id="disease4_2_2" class="content">
+            <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+            <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+            <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+        </div>
+        <!-- Додайте інші підблоки до 4.2.10 -->
+    </div>
+
+    <!-- Підблок 4.3: Усний договір -->
+    <h3 onclick="toggleContent('disease4_3')"><i class="fas fa-handshake"></i> Усний договір</h3>
+    <div id="disease4_3" class="content">
+        <p>Симптоми: <span class="symptomsPlaceholder">_</span></p>
+        <p>Ускладнення: <span class="complicationsPlaceholder">_</span></p>
+        <p>Дія препарату: <span class="drugActionsPlaceholder">_</span></p>
+    </div>
+</div>
+
+                                                                                                                              <!-- Блок Хвороба 5 -->
+
+</body>
+</html>
